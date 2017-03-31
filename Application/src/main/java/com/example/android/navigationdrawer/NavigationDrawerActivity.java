@@ -24,9 +24,10 @@ import android.app.SearchManager;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -65,7 +66,7 @@ import java.util.Locale;
  * An action should be an operation performed on the current contents of the window,
  * for example enabling or disabling a data overlay on top of the current content.</p>
  */
-public class NavigationDrawerActivity extends Activity implements PlanetAdapter.OnItemClickListener {
+public class NavigationDrawerActivity extends AppCompatActivity implements PlanetAdapter.OnItemClickListener {
     private DrawerLayout mDrawerLayout;
     private RecyclerView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -91,30 +92,31 @@ public class NavigationDrawerActivity extends Activity implements PlanetAdapter.
 
         // set up the drawer's list view with items and click listener
         mDrawerList.setAdapter(new PlanetAdapter(mPlanetTitles, this));
-        // enable ActionBar app icon to behave as action to toggle nav drawer
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setHomeButtonEnabled(true);
+        // if toolbar is present let us show the hamburger
+        if(getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeButtonEnabled(true);
+        }
 
         // ActionBarDrawerToggle ties together the the proper interactions
         // between the sliding drawer and the action bar app icon
         mDrawerToggle = new ActionBarDrawerToggle(
                 this,                  /* host Activity */
                 mDrawerLayout,         /* DrawerLayout object */
-                R.drawable.ic_drawer,  /* nav drawer image to replace 'Up' caret */
                 R.string.drawer_open,  /* "open drawer" description for accessibility */
                 R.string.drawer_close  /* "close drawer" description for accessibility */
         ) {
             public void onDrawerClosed(View view) {
-                getActionBar().setTitle(mTitle);
+                getSupportActionBar().setTitle(mTitle);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
 
             public void onDrawerOpened(View drawerView) {
-                getActionBar().setTitle(mDrawerTitle);
+                getSupportActionBar().setTitle(mDrawerTitle);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        mDrawerLayout.addDrawerListener(mDrawerToggle);
 
         if (savedInstanceState == null) {
             selectItem(0);
@@ -150,7 +152,7 @@ public class NavigationDrawerActivity extends Activity implements PlanetAdapter.
             case R.id.action_websearch:
                 // create intent to perform web search for this planet
                 Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
-                intent.putExtra(SearchManager.QUERY, getActionBar().getTitle());
+                intent.putExtra(SearchManager.QUERY, getSupportActionBar().getTitle());
                 // catch event that there's no activity to handle intent
                 if (intent.resolveActivity(getPackageManager()) != null) {
                     startActivity(intent);
@@ -186,7 +188,7 @@ public class NavigationDrawerActivity extends Activity implements PlanetAdapter.
     @Override
     public void setTitle(CharSequence title) {
         mTitle = title;
-        getActionBar().setTitle(mTitle);
+        getSupportActionBar().setTitle(mTitle);
     }
 
     /**
